@@ -4,7 +4,7 @@
  */
 public class Test {
     public static void main(String[] args) {
-        String text = "5+8";
+        String text = "55 - 9 + 8";
         Interpreter interpreter = new Interpreter(text);
         Object result = interpreter.express();
 

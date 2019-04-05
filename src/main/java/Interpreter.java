@@ -62,11 +62,6 @@ public class Interpreter {
         return Integer.valueOf(result.toString());
     }
 
-
-    private int toInt(char c) {
-        return c - '0';
-    }
-
     public Token getNextToken() {
         while (currentChar != null) {
             if (Character.isSpaceChar(currentChar)) {
@@ -78,15 +73,16 @@ public class Interpreter {
             }
             if (currentChar == '+') {
                 advance();
-                return new Token(TokenType.PLUS, currentChar);
+                return new Token(TokenType.PLUS, '+');
             }
             if (currentChar == '-') {
                 advance();
-                return new Token(TokenType.MINUS, currentChar);
+                return new Token(TokenType.MINUS, '-');
             }
+            throw new IllegalStateException("Error parsing input");
         }
+        return new Token(TokenType.EOF, null);
 
-        throw new IllegalStateException("Error parsing input");
     }
 
     public void eat(String tokenType) {
@@ -100,24 +96,23 @@ public class Interpreter {
     public Object express() {
         currentToken = getNextToken();
 
-        Token left = currentToken;
-        eat(TokenType.INTERGER);
+        Object result = term();
 
-        Token op = currentToken;
-
-        if (TokenType.PLUS.equals(op.getType())) {
-            eat(TokenType.PLUS);
-        } else {
-            eat(TokenType.MINUS);
+        while (currentToken != null && (TokenType.PLUS.equals(currentToken.getType()) || TokenType.MINUS.equals(currentToken.getType()))) {
+            if (TokenType.PLUS.equals(currentToken.getType())) {
+                eat(TokenType.PLUS);
+                result = (Integer) result + (Integer) term();
+            } else {
+                eat(TokenType.MINUS);
+                result = (Integer) result - (Integer) term();
+            }
         }
+        return result;
+    }
 
-        Token right = currentToken;
+    private Object term() {
+        Token token = currentToken;
         eat(TokenType.INTERGER);
-        if (TokenType.PLUS.equals(op.getType())) {
-            return (Integer) left.getValue() + (Integer) right.getValue();
-        } else {
-            return (Integer) left.getValue() - (Integer) right.getValue();
-
-        }
+        return token.getValue();
     }
 }
