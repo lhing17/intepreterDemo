@@ -27,15 +27,15 @@ public class Interpreter {
     public Object express() {
         currentToken = lexer.getNextToken();
 
-        Object result = factor();
+        Object result = term();
 
         while (currentToken != null && (TokenType.PLUS.equals(currentToken.getType()) || TokenType.MINUS.equals(currentToken.getType()))) {
             if (TokenType.PLUS.equals(currentToken.getType())) {
                 eat(TokenType.PLUS);
-                result = (Integer) result + (Integer) factor();
+                result = (Integer) result + (Integer) term();
             } else {
                 eat(TokenType.MINUS);
-                result = (Integer) result - (Integer) factor();
+                result = (Integer) result - (Integer) term();
             }
         }
         return result;
@@ -45,5 +45,20 @@ public class Interpreter {
         Token token = currentToken;
         eat(TokenType.INTEGER);
         return token.getValue();
+    }
+
+    private Object term() {
+        Object result = factor();
+        while (currentToken != null && (TokenType.MUL.equals(currentToken.getType()) || TokenType.DIV.equals(currentToken.getType()))) {
+            if (TokenType.MUL.equals(currentToken.getType())) {
+                eat(TokenType.MUL);
+                result = (Integer) result * (Integer) factor();
+            }
+            if (TokenType.DIV.equals(currentToken.getType())) {
+                eat(TokenType.DIV);
+                result = (Integer) result / (Integer) factor();
+            }
+        }
+        return result;
     }
 }
