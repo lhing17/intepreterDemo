@@ -5,7 +5,8 @@
 public class Test {
     public static void main(String[] args) {
         String text = "55 - 9 + 8";
-        Interpreter interpreter = new Interpreter(text);
+        Lexer lexer = new Lexer(text);
+        Interpreter interpreter = new Interpreter(lexer);
         Object result = interpreter.express();
 
         System.out.println(result);

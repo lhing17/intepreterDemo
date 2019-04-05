@@ -3,8 +3,10 @@
  * @date 2019/04/05
  */
 public interface TokenType {
-    String INTERGER = "INTEGER";
+    String INTEGER = "INTEGER";
     String PLUS = "PLUS";
     String EOF = "EOF";
     String MINUS = "MINUS";
+    String MUL = "MUL";
+    String DIV = "DIV";
 }
