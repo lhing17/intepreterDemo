@@ -6,6 +6,7 @@ public class Interpreter {
     private String text;
     private int pos;
     private Token currentToken;
+    private Character currentChar;
 
     public String getText() {
         return text;
@@ -35,28 +36,56 @@ public class Interpreter {
         this.text = text;
         this.pos = 0;
         this.currentToken = null;
+        this.currentChar = text.charAt(pos);
     }
+
+    public void advance() {
+        if (++pos > text.length() - 1) {
+            currentChar = null;
+        } else {
+            currentChar = text.charAt(pos);
+        }
+    }
+
+    public void skipWhiteSpace() {
+        while (currentChar != null && Character.isSpaceChar(currentChar)) {
+            advance();
+        }
+    }
+
+    public Integer integer() {
+        StringBuilder result = new StringBuilder();
+        while (currentChar != null && Character.isDigit(currentChar)) {
+            result.append(currentChar);
+            advance();
+        }
+        return Integer.valueOf(result.toString());
+    }
+
 
     private int toInt(char c) {
         return c - '0';
     }
 
     public Token getNextToken() {
-        String text = this.text;
-        if (pos > text.length() - 1) {
-            return new Token(TokenType.EOF, null);
+        while (currentChar != null) {
+            if (Character.isSpaceChar(currentChar)) {
+                skipWhiteSpace();
+                continue;
+            }
+            if (Character.isDigit(currentChar)) {
+                return new Token(TokenType.INTERGER, integer());
+            }
+            if (currentChar == '+') {
+                advance();
+                return new Token(TokenType.PLUS, currentChar);
+            }
+            if (currentChar == '-') {
+                advance();
+                return new Token(TokenType.MINUS, currentChar);
+            }
         }
-        char currentChar = text.charAt(pos);
-        if (Character.isDigit(currentChar)) {
-            Token token = new Token(TokenType.INTERGER, toInt(currentChar));
-            pos++;
-            return token;
-        }
-        if (currentChar == '+') {
-            Token token = new Token(TokenType.PLUS, currentChar);
-            pos++;
-            return token;
-        }
+
         throw new IllegalStateException("Error parsing input");
     }
 
@@ -75,11 +104,20 @@ public class Interpreter {
         eat(TokenType.INTERGER);
 
         Token op = currentToken;
-        eat(TokenType.PLUS);
+
+        if (TokenType.PLUS.equals(op.getType())) {
+            eat(TokenType.PLUS);
+        } else {
+            eat(TokenType.MINUS);
+        }
 
         Token right = currentToken;
         eat(TokenType.INTERGER);
+        if (TokenType.PLUS.equals(op.getType())) {
+            return (Integer) left.getValue() + (Integer) right.getValue();
+        } else {
+            return (Integer) left.getValue() - (Integer) right.getValue();
 
-        return (Integer) left.getValue() + (Integer) right.getValue();
+        }
     }
 }

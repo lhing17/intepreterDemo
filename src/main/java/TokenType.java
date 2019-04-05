@@ -6,4 +6,5 @@ public interface TokenType {
     String INTERGER = "INTEGER";
     String PLUS = "PLUS";
     String EOF = "EOF";
+    String MINUS = "MINUS";
 }
