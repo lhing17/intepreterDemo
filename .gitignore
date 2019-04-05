@@ -1,0 +1,7 @@
+/.idea/*
+*.iml
+.idea/
+intepreterDemo.iml
+src/main/resources/
+src/test/
+target/
