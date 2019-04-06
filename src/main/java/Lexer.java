@@ -85,6 +85,14 @@ public class Lexer {
                 advance();
                 return new Token(TokenType.MINUS, '-');
             }
+            if (currentChar == '(') {
+                advance();
+                return new Token(TokenType.LPAREN, '(');
+            }
+            if (currentChar == ')') {
+                advance();
+                return new Token(TokenType.RPAREN, ')');
+            }
             throw new IllegalStateException("Error parsing input");
         }
         return new Token(TokenType.EOF, null);

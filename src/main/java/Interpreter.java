@@ -12,7 +12,7 @@ public class Interpreter {
 
     public Interpreter(Lexer lexer) {
         this.lexer = lexer;
-        this.currentToken = null;
+        this.currentToken = lexer.getNextToken();
     }
 
 
@@ -24,9 +24,7 @@ public class Interpreter {
         }
     }
 
-    public Object express() {
-        currentToken = lexer.getNextToken();
-
+    public Object expr() {
         Object result = term();
 
         while (currentToken != null && (TokenType.PLUS.equals(currentToken.getType()) || TokenType.MINUS.equals(currentToken.getType()))) {
@@ -43,8 +41,16 @@ public class Interpreter {
 
     private Object factor() {
         Token token = currentToken;
-        eat(TokenType.INTEGER);
-        return token.getValue();
+        if (TokenType.INTEGER.equals(currentToken.getType())){
+            eat(TokenType.INTEGER);
+            return token.getValue();
+        } else if (TokenType.LPAREN.equals(currentToken.getType())) {
+            eat(TokenType.LPAREN);
+            Object result = expr();
+            eat(TokenType.RPAREN);
+            return result;
+        }
+        throw new IllegalStateException("Error parsing input");
     }
 
     private Object term() {

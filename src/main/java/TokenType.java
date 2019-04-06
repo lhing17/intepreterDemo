@@ -9,4 +9,6 @@ public interface TokenType {
     String MINUS = "MINUS";
     String MUL = "MUL";
     String DIV = "DIV";
+    String LPAREN = "LPAREN";
+    String RPAREN = "RPAREN";
 }
