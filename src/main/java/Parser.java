@@ -15,7 +15,7 @@ public class Parser {
      * Grammar:
      * EXPR ::= TERM (PLUS|MINUS TERM)*
      * TERM ::= FACTOR (MUL|DIV FACTOR)*
-     * FACTOR ::= INTEGER
+     * FACTOR ::= INTEGER | (PLUS|MINUS)FACTOR | LPAREN EXPR RPAREN
      */
     public void eat(String tokenType) {
         if (tokenType.equals(currentToken.getType())) {
@@ -27,6 +27,14 @@ public class Parser {
 
     public AbstractSyntaxTree factor() {
         Token token = currentToken;
+        if (TokenType.PLUS.equals(currentToken.getType())){
+            eat(TokenType.PLUS);
+            return new UnaryOperator(token, factor());
+        }
+        if (TokenType.MINUS.equals(currentToken.getType())){
+            eat(TokenType.MINUS);
+            return new UnaryOperator(token, factor());
+        }
         if (TokenType.INTEGER.equals(currentToken.getType())) {
             eat(TokenType.INTEGER);
             return new Num(token);

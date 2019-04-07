@@ -4,7 +4,7 @@
  */
 public class Test {
     public static void main(String[] args) {
-        String text = "55 - (9 + 8 ) * 2";
+        String text = "55 - (9 + 8 ) * --2";
         Lexer lexer = new Lexer(text);
         Parser parser = new Parser(lexer);
         Interpreter interpreter = new Interpreter(parser);
