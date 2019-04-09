@@ -1,15 +1,17 @@
+package cn.gsein.interpreter.ast;
+
+import cn.gsein.interpreter.Token;
+
 /**
  * @author G. Seinfeld
- * @date 2019/04/06
+ * @date 2019/04/09
  */
-public class Num extends AbstractSyntaxTree {
+public class Variable extends AbstractSyntaxTree{
     private Token token;
+    /**
+     * holds the variable name
+     */
     private Object value;
-
-    public Num(Token token) {
-        this.token = token;
-        this.value = token.getValue();
-    }
 
     public Token getToken() {
         return token;
@@ -25,5 +27,10 @@ public class Num extends AbstractSyntaxTree {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public Variable(Token token) {
+        this.token = token;
+        this.value = token.getValue();
     }
 }

@@ -1,3 +1,7 @@
+package cn.gsein.interpreter.ast;
+
+import cn.gsein.interpreter.Token;
+
 /**
  * @author G. Seinfeld
  * @date 2019/04/07

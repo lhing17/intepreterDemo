@@ -1,3 +1,7 @@
+package cn.gsein.interpreter;
+
+import cn.gsein.interpreter.ast.AbstractSyntaxTree;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

@@ -1,3 +1,8 @@
+package cn.gsein.interpreter;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author G. Seinfeld
  * @date 2019/04/05
@@ -7,37 +12,13 @@ public class Lexer {
     private int pos;
     private Character currentChar;
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public int getPos() {
-        return pos;
-    }
-
-    public void setPos(int pos) {
-        this.pos = pos;
-    }
-
-    public Character getCurrentChar() {
-        return currentChar;
-    }
-
-    public void setCurrentChar(Character currentChar) {
-        this.currentChar = currentChar;
-    }
-
-    public Lexer(String text) {
+    Lexer(String text) {
         this.text = text;
         this.pos = 0;
         this.currentChar = text.charAt(pos);
     }
 
-    public Integer integer() {
+    private Integer integer() {
         StringBuilder result = new StringBuilder();
         while (currentChar != null && Character.isDigit(currentChar)) {
             result.append(currentChar);
@@ -46,7 +27,7 @@ public class Lexer {
         return Integer.valueOf(result.toString());
     }
 
-    public void advance() {
+    private void advance() {
         if (++pos > text.length() - 1) {
             currentChar = null;
         } else {
@@ -54,15 +35,42 @@ public class Lexer {
         }
     }
 
-    public void skipWhiteSpace() {
-        while (currentChar != null && Character.isSpaceChar(currentChar)) {
+    public Character peek() {
+        int peekPos = pos + 1;
+        if (peekPos > text.length() - 1) {
+            return null;
+        } else {
+            return text.charAt(peekPos);
+        }
+    }
+
+    private static final Map<String, Token> RESERVED_KEYWORDS = new HashMap<String, Token>() {{
+        put("BEGIN", new Token(TokenType.BEGIN, "BEGIN"));
+        put("END", new Token(TokenType.END, "END"));
+    }};
+
+    private Token handleId() {
+        StringBuilder result = new StringBuilder();
+        while (currentChar != null && Character.isLetterOrDigit(currentChar)) {
+            result.append(currentChar);
+            advance();
+        }
+        Token token = RESERVED_KEYWORDS.get(result.toString());
+        if (token == null) {
+            token = new Token(TokenType.ID, result.toString());
+        }
+        return token;
+    }
+
+    private void skipWhiteSpace() {
+        while (currentChar != null && Character.isWhitespace(currentChar)) {
             advance();
         }
     }
 
-    public Token getNextToken() {
+    Token getNextToken() {
         while (currentChar != null) {
-            if (Character.isSpaceChar(currentChar)) {
+            if (Character.isWhitespace(currentChar)) {
                 skipWhiteSpace();
                 continue;
             }
@@ -75,7 +83,7 @@ public class Lexer {
             }
             if (currentChar == '/') {
                 advance();
-                return new Token(TokenType.MUL, '/');
+                return new Token(TokenType.DIV, '/');
             }
             if (currentChar == '+') {
                 advance();
@@ -92,6 +100,22 @@ public class Lexer {
             if (currentChar == ')') {
                 advance();
                 return new Token(TokenType.RPAREN, ')');
+            }
+            if (Character.isLetter(currentChar)) {
+                return handleId();
+            }
+            if (currentChar == ':' && peek() == '=') {
+                advance();
+                advance();
+                return new Token(TokenType.ASSIGN, ":=");
+            }
+            if (currentChar == ';') {
+                advance();
+                return new Token(TokenType.SEMI, ';');
+            }
+            if (currentChar == '.') {
+                advance();
+                return new Token(TokenType.DOT, '.');
             }
             throw new IllegalStateException("Error parsing input");
         }
