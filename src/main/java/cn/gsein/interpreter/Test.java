@@ -1,5 +1,7 @@
 package cn.gsein.interpreter;
 
+import cn.gsein.interpreter.ast.AbstractSyntaxTree;
+
 /**
  * @author G. Seinfeld
  * @date 2019/04/05
@@ -30,7 +32,11 @@ public class Test {
                 "END.  {Part10}";
         Lexer lexer = new Lexer(text);
         Parser parser = new Parser(lexer);
-        Interpreter interpreter = new Interpreter(parser);
+        AbstractSyntaxTree tree = parser.parse();
+        SymbolTableBuilder builder = new SymbolTableBuilder();
+        builder.visit(tree);
+
+        Interpreter interpreter = new Interpreter(tree);
         Object result = interpreter.interpret();
 
         System.out.println(result);

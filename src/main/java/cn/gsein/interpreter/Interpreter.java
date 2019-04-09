@@ -10,12 +10,11 @@ import java.util.Map;
  * @date 2019/04/05
  */
 public class Interpreter extends NodeVisitor {
-    private Parser parser;
+    private AbstractSyntaxTree tree;
+    private static final Map<String, Object> GLOBAL_MEMORY = new HashMap<>();
 
-    private static final Map<String, Object> GLOBAL_SCOPE = new HashMap<>();
-
-    public Interpreter(Parser parser) {
-        this.parser = parser;
+    public Interpreter(AbstractSyntaxTree tree) {
+        this.tree = tree;
     }
 
     public Object visitProgram(AbstractSyntaxTree node) {
@@ -54,23 +53,23 @@ public class Interpreter extends NodeVisitor {
             Double rightDouble = Double.valueOf(String.valueOf(visit(op.getRight())));
             if (TokenType.PLUS.equals(op.getOperator().getType())) {
                 if (left instanceof Integer && right instanceof Integer) {
-                    return (Integer) left + (Integer)right;
-                } else{
+                    return (Integer) left + (Integer) right;
+                } else {
                     return leftDouble + rightDouble;
                 }
             }
 
             if (TokenType.MINUS.equals(op.getOperator().getType())) {
                 if (left instanceof Integer && right instanceof Integer) {
-                    return (Integer) left - (Integer)right;
-                } else{
+                    return (Integer) left - (Integer) right;
+                } else {
                     return leftDouble - rightDouble;
                 }
             }
             if (TokenType.MUL.equals(op.getOperator().getType())) {
                 if (left instanceof Integer && right instanceof Integer) {
-                    return (Integer) left * (Integer)right;
-                } else{
+                    return (Integer) left * (Integer) right;
+                } else {
                     return leftDouble * rightDouble;
                 }
             }
@@ -123,7 +122,7 @@ public class Interpreter extends NodeVisitor {
         if (node instanceof Assign) {
             Assign assign = (Assign) node;
             String variableName = (String) assign.getLeft().getValue();
-            GLOBAL_SCOPE.put(variableName, visit(assign.getRight()));
+            GLOBAL_MEMORY.put(variableName, visit(assign.getRight()));
         }
         return null;
     }
@@ -132,7 +131,7 @@ public class Interpreter extends NodeVisitor {
         if (node instanceof Variable) {
             Variable variable = (Variable) node;
             String variableName = (String) variable.getValue();
-            Object value = GLOBAL_SCOPE.get(variableName);
+            Object value = GLOBAL_MEMORY.get(variableName);
             if (value == null) {
                 throw new IllegalStateException("Variable not assigned");
             } else {
@@ -143,9 +142,9 @@ public class Interpreter extends NodeVisitor {
     }
 
     public Object interpret() {
-        AbstractSyntaxTree tree = parser.parse();
+        AbstractSyntaxTree tree = this.tree;
         Object result = visit(tree);
-        System.out.println(GLOBAL_SCOPE);
+        System.out.println(GLOBAL_MEMORY);
         return result;
     }
 }
