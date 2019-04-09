@@ -10,7 +10,7 @@ public interface TokenType {
     String EOF = "EOF";
     String MINUS = "MINUS";
     String MUL = "MUL";
-    String DIV = "DIV";
+    String FLOAT_DIV = "FLOAT_DIV";
     String LPAREN = "LPAREN";
     String RPAREN = "RPAREN";
     String BEGIN = "BEGIN";
@@ -19,4 +19,12 @@ public interface TokenType {
     String ID = "ID";
     String ASSIGN = "ASSIGN";
     String SEMI = "SEMI";
+    String PROGRAM = "PROGRAM";
+    String VAR = "VAR";
+    String REAL= "REAL";
+    String INTEGER_DIV = "INTEGER_DIV";
+    String REAL_CONST = "REAL_CONST";
+    String INTEGER_CONST = "INTEGER_CONST";
+    String COLON = "COLON";
+    String COMMA = "COMMA";
 }

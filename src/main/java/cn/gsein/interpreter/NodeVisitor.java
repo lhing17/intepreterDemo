@@ -17,7 +17,7 @@ public class NodeVisitor {
             Method method = this.getClass().getDeclaredMethod("visit" + name, AbstractSyntaxTree.class);
             return method.invoke(this, node);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("error parsing input.", e);
+            throw new IllegalStateException("no corresponding visitor.", e);
         }
     }
 }

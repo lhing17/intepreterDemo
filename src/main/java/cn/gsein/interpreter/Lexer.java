@@ -12,19 +12,39 @@ public class Lexer {
     private int pos;
     private Character currentChar;
 
+    private static final Map<String, Token> RESERVED_KEYWORDS = new HashMap<String, Token>() {{
+        put("PROGRAM", new Token(TokenType.PROGRAM, "PROGRAM"));
+        put("VAR", new Token(TokenType.VAR, "VAR"));
+        put("DIV", new Token(TokenType.INTEGER_DIV, "DIV"));
+        put("INTEGER", new Token(TokenType.INTEGER, "INTEGER"));
+        put("REAL", new Token(TokenType.REAL, "REAL"));
+        put("BEGIN", new Token(TokenType.BEGIN, "BEGIN"));
+        put("END", new Token(TokenType.END, "END"));
+
+    }};
+
     Lexer(String text) {
         this.text = text;
         this.pos = 0;
         this.currentChar = text.charAt(pos);
     }
 
-    private Integer integer() {
+    private Token number() {
         StringBuilder result = new StringBuilder();
         while (currentChar != null && Character.isDigit(currentChar)) {
             result.append(currentChar);
             advance();
         }
-        return Integer.valueOf(result.toString());
+        if (currentChar != null && currentChar == '.'){
+            result.append(currentChar);
+            advance();
+            while (currentChar != null && Character.isDigit(currentChar)) {
+                result.append(currentChar);
+                advance();
+            }
+            return new Token(TokenType.REAL_CONST, Double.valueOf(result.toString()));
+        }
+        return new Token(TokenType.INTEGER_CONST, Integer.valueOf(result.toString()));
     }
 
     private void advance() {
@@ -33,6 +53,13 @@ public class Lexer {
         } else {
             currentChar = text.charAt(pos);
         }
+    }
+
+    private void skipComment() {
+        while (currentChar != '}') {
+            advance();
+        }
+        advance();
     }
 
     public Character peek() {
@@ -44,10 +71,6 @@ public class Lexer {
         }
     }
 
-    private static final Map<String, Token> RESERVED_KEYWORDS = new HashMap<String, Token>() {{
-        put("BEGIN", new Token(TokenType.BEGIN, "BEGIN"));
-        put("END", new Token(TokenType.END, "END"));
-    }};
 
     private Token handleId() {
         StringBuilder result = new StringBuilder();
@@ -75,7 +98,16 @@ public class Lexer {
                 continue;
             }
             if (Character.isDigit(currentChar)) {
-                return new Token(TokenType.INTEGER, integer());
+                return number();
+            }
+            if (currentChar == '{') {
+                advance();
+                skipComment();
+                continue;
+            }
+            if (currentChar == ','){
+                advance();
+                return new Token(TokenType.COMMA, ',');
             }
             if (currentChar == '*') {
                 advance();
@@ -83,7 +115,7 @@ public class Lexer {
             }
             if (currentChar == '/') {
                 advance();
-                return new Token(TokenType.DIV, '/');
+                return new Token(TokenType.FLOAT_DIV, '/');
             }
             if (currentChar == '+') {
                 advance();
@@ -108,6 +140,10 @@ public class Lexer {
                 advance();
                 advance();
                 return new Token(TokenType.ASSIGN, ":=");
+            }
+            if (currentChar == ':'){
+                advance();
+                return new Token(TokenType.COLON, ':');
             }
             if (currentChar == ';') {
                 advance();

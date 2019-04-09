@@ -18,20 +18,67 @@ public class Interpreter extends NodeVisitor {
         this.parser = parser;
     }
 
+    public Object visitProgram(AbstractSyntaxTree node) {
+        if (node instanceof Program) {
+            Program program = (Program) node;
+            return visit(program.getBlock());
+        }
+        throw new IllegalStateException("error parsing input");
+    }
+
+    public Object visitBlock(AbstractSyntaxTree node) {
+        if (node instanceof Block) {
+            Block block = (Block) node;
+            for (VariableDeclaration declaration : block.getDeclarations()) {
+                visit(declaration);
+            }
+            visit(((Block) node).getCompound());
+        }
+        return null;
+    }
+
+    public Object visitVariableDeclaration(AbstractSyntaxTree node) {
+        return null;
+    }
+
+    public Object visitType(AbstractSyntaxTree node) {
+        return null;
+    }
+
     public Object visitBinaryOperator(AbstractSyntaxTree node) {
         if (node instanceof BinaryOperator) {
             BinaryOperator op = (BinaryOperator) node;
+            Object left = visit(op.getLeft());
+            Object right = visit(op.getRight());
+            Double leftDouble = Double.valueOf(String.valueOf(visit(op.getLeft())));
+            Double rightDouble = Double.valueOf(String.valueOf(visit(op.getRight())));
             if (TokenType.PLUS.equals(op.getOperator().getType())) {
-                return (Integer) visit(op.getLeft()) + (Integer) visit(op.getRight());
+                if (left instanceof Integer && right instanceof Integer) {
+                    return (Integer) left + (Integer)right;
+                } else{
+                    return leftDouble + rightDouble;
+                }
             }
+
             if (TokenType.MINUS.equals(op.getOperator().getType())) {
-                return (Integer) visit(op.getLeft()) - (Integer) visit(op.getRight());
+                if (left instanceof Integer && right instanceof Integer) {
+                    return (Integer) left - (Integer)right;
+                } else{
+                    return leftDouble - rightDouble;
+                }
             }
             if (TokenType.MUL.equals(op.getOperator().getType())) {
-                return (Integer) visit(op.getLeft()) * (Integer) visit(op.getRight());
+                if (left instanceof Integer && right instanceof Integer) {
+                    return (Integer) left * (Integer)right;
+                } else{
+                    return leftDouble * rightDouble;
+                }
             }
-            if (TokenType.DIV.equals(op.getOperator().getType())) {
+            if (TokenType.INTEGER_DIV.equals(op.getOperator().getType())) {
                 return (Integer) visit(op.getLeft()) / (Integer) visit(op.getRight());
+            }
+            if (TokenType.FLOAT_DIV.equals(op.getOperator().getType())) {
+                return leftDouble / rightDouble;
             }
         }
         throw new IllegalStateException("error parsing input");
